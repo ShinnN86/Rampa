@@ -40,7 +40,7 @@
       z-index: 1000;
     }
 
- 
+
     #infoBox {
       position: absolute;
       top: 30px;
@@ -197,7 +197,7 @@
   <a-scene shadow="type:pcfsoft; enabled:true" renderer="colorManagement:true; physicallyCorrectLights:true">
 
     <a-assets>
-      <a-asset-item id="modeloGLB" src="Rampav2.glb"></a-asset-item>
+      <a-asset-item id="modeloGLB" src="Rampav3.glb"></a-asset-item>
     </a-assets>
 
     <a-sky color="#87CEEB"></a-sky>
@@ -225,7 +225,7 @@
     <!-- CAMARA -->
     <a-entity camera look-controls wasd-controls="acceleration:80" position="0 1.6 5">
 
-      <a-cursor rayOrigin="mouse"></a-cursor>
+      <a-cursor rayOrigin="entity"></a-cursor>
 
     </a-entity>
 
@@ -363,18 +363,12 @@
     window.addEventListener("mousemove", (event) => {
 
       if (meshList.length === 0) return;
-
       const camera = document.querySelector("[camera]").getObject3D("camera");
-
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
       raycaster.setFromCamera(mouse, camera);
-
       const intersects = raycaster.intersectObjects(meshList, true);
-
       const obj = intersects[0].object;
-
       const data = infoPartes[obj.name];
 
       if (data) {
@@ -400,15 +394,53 @@
 
     });
 
+
+    function detectarCentro() {
+
+      if (!('ontouchstart' in window || navigator.maxTouchPoints > 0))
+        return;
+
+      const camera = document.querySelector("[camera]").getObject3D("camera");
+
+    
+      raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+
+      const intersects = raycaster.intersectObjects(meshList, true);
+
+      if (intersects.length > 0) {
+
+        const obj = intersects[0].object;
+        const data = infoPartes[obj.name];
+
+        if (data) {
+
+          if (lastHit !== obj.name) {
+            lastHit = obj.name;
+
+            titulo.textContent = data.titulo;
+            descripcion.textContent = data.descripcion;
+            infoBox.style.display = "block";
+          }
+
+          drawConnection(obj);
+          return;
+        }
+      }
+
+      lastHit = null;
+      infoBox.style.display = "none";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    }
+
     /* ----------------------------
-       CLICK (PC + móvil)
+      PC móvil
     -----------------------------*/
     window.addEventListener("click", () => {
 
       if (!lastHit) return;
 
       const data = infoPartes[lastHit];
-
       if (!data) return;
 
       titulo.textContent = data.titulo;
@@ -418,13 +450,11 @@
     });
 
     const canvas = document.getElementById("lineCanvas");
-
     const ctx = canvas.getContext("2d");
 
     function resizeCanvas() {
 
       canvas.width = window.innerWidth;
-
       canvas.height = window.innerHeight;
 
     }
@@ -438,66 +468,53 @@
     function drawConnection(obj) {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       const camera = document.querySelector("[camera]").getObject3D("camera");
-
       const pos = obj.getWorldPosition(new THREE.Vector3());
-
       pos.project(camera);
-
       const x = (pos.x * 0.5 + 0.5) * canvas.width;
-
       const y = (-pos.y * 0.5 + 0.5) * canvas.height;
-
       const box = infoBox.getBoundingClientRect();
-
       const x2 = box.left;
-
       const y2 = box.top + box.height / 2;
-
       ctx.strokeStyle = "#ffd56a";
-
       ctx.lineWidth = 3;
-
       ctx.beginPath();
-
       ctx.moveTo(x, y);
-
       ctx.lineTo(x2, y2);
-
       ctx.stroke();
-
       ctx.fillStyle = "#ffd56a";
-
       ctx.beginPath();
-
       ctx.arc(x, y, 7, 0, Math.PI * 2);
-
       ctx.fill();
     }
 
 
     const cam = document.querySelector("[camera]");
+
     function animate() {
 
-      requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 
-      const velocidad = 0.05;
-      const velocidadY = 0.03;
+    const velocidad = 0.12;
+    const velocidadY = 0.08;
 
-      if (mover.w) cam.object3D.translateZ(-velocidad);
-      if (mover.s) cam.object3D.translateZ(velocidad);
-      if (mover.a) cam.object3D.translateX(-velocidad);
-      if (mover.d) cam.object3D.translateX(velocidad);
+    if (mover.w) cam.object3D.translateZ(-velocidad);
+    if (mover.s) cam.object3D.translateZ(velocidad);
+    if (mover.a) cam.object3D.translateX(-velocidad);
+    if (mover.d) cam.object3D.translateX(velocidad);
 
-      if (mover.up)
+    if (mover.up)
         cam.object3D.position.y += velocidadY;
 
-      if (mover.down)
+    if (mover.down)
         cam.object3D.position.y -= velocidadY;
 
-    }
+    // Detecta el objeto al que apunta el centro
+    detectarCentro();
+
+}
     animate();
+
 
 
     b.addEventListener("pointerdown", () => {
