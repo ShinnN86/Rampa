@@ -120,6 +120,47 @@
       font-size: 13px;
       z-index: 999;
     }
+
+    #mobileHeight {
+
+      position: absolute;
+      bottom: 40px;
+      right: 30px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      z-index: 1000;
+
+    }
+
+    #mobileHeight button {
+
+      width: 65px;
+      height: 65px;
+
+      border: none;
+      border-radius: 50%;
+
+      background: rgba(30, 30, 30, .65);
+
+      color: white;
+
+      font-size: 30px;
+      font-weight: bold;
+
+      backdrop-filter: blur(8px);
+
+      touch-action: none;
+
+    }
+
+    #mobileHeight button:active {
+
+      background: #d6b15f;
+
+    }
   </style>
 
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -128,7 +169,24 @@
 
 <body>
 
-  <!-- UI INFO -->
+
+  <div id="mobileControls">
+
+    <button id="btnW">▲</button>
+
+    <div class="fila">
+      <button id="btnA">◀</button>
+      <button id="btnS">▼</button>
+      <button id="btnD">▶</button>
+    </div>
+
+  </div>
+
+  <div id="mobileHeight">
+    <button id="btnUp">+</button>
+    <button id="btnDown">−</button>
+  </div>
+
   <div id="infoBox">
     <h3 id="titulo"></h3>
     <p id="descripcion"></p>
@@ -136,11 +194,10 @@
 
   <canvas id="lineCanvas"></canvas>
 
-  <!-- DEBUG -->
-  <div id="debugBox">
+<!--<div id="debugBox">
     <b>Objetos interactivos</b>
     <ul id="listaObjetos"></ul>
-  </div>
+  </div>-->
 
   <a-scene shadow="type:pcfsoft; enabled:true" renderer="colorManagement:true; physicallyCorrectLights:true">
 
@@ -181,6 +238,15 @@
 
   <script>
 
+    let mover = {
+      w: false,
+      a: false,
+      s: false,
+      d: false,
+      up: false,
+      down: false
+    };
+
 
     /* ----------------------------
        CONTROLES DE ALTURA (TECLADO)
@@ -208,6 +274,26 @@
       }
 
       camara.setAttribute("position", pos);
+
+    });
+
+    [
+      ["btnUp", "up"],
+      ["btnDown", "down"]
+
+    ].forEach(([id, key]) => {
+
+      const b = document.getElementById(id);
+
+      b.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        mover[key] = true;
+      });
+
+      b.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        mover[key] = false;
+      });
 
     });
 
@@ -395,24 +481,19 @@
 
     function animate() {
 
-      requestAnimationFrame(animate);
+      const velocidad = 0.05;
+      const velocidadY = 0.03;
 
-      if (lastHit) {
+      if (mover.w) cam.object3D.translateZ(-velocidad);
+      if (mover.s) cam.object3D.translateZ(velocidad);
+      if (mover.a) cam.object3D.translateX(-velocidad);
+      if (mover.d) cam.object3D.translateX(velocidad);
 
-        const obj = meshList.find(o => o.name === lastHit);
+      if (mover.up)
+        cam.object3D.position.y += velocidadY;
 
-        if (obj) {
-
-          drawConnection(obj);
-
-        }
-
-      } else {
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      }
-
+      if (mover.down)
+        cam.object3D.position.y -= velocidadY;
     }
 
     animate();
