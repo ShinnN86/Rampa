@@ -11,45 +11,60 @@
       overflow: hidden;
     }
 
-    /* INFO BOX */
+
+    #mobileControls {
+      position: absolute;
+      left: 290px;
+      bottom: 25px;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    #mobileControls .fila {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: center;
+    }
+
+    #mobileControls button {
+      width: 65px;
+      height: 65px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(30, 30, 30, .65);
+      color: white;
+      font-size: 28px;
+      backdrop-filter: blur(8px);
+      touch-action: none;
+      z-index: 1000;
+    }
+
+ 
     #infoBox {
       position: absolute;
       top: 30px;
       right: 30px;
 
       width: 320px;
-
       padding: 20px;
-
       color: white;
-
       background: rgba(18, 22, 30, .78);
-
       backdrop-filter: blur(15px);
-
       border: 1px solid rgba(255, 215, 120, .5);
-
       border-left: 6px solid #d6b15f;
-
       border-radius: 18px;
-
       box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
-
       font-family: Arial, sans-serif;
-
       display: none;
-
       animation: fade .35s ease;
-
       z-index: 999;
     }
 
     #titulo {
 
       margin: 0;
-
       font-size: 23px;
-
       color: #ffd56a;
 
     }
@@ -57,11 +72,8 @@
     #descripcion {
 
       margin-top: 10px;
-
       line-height: 1.6;
-
       font-size: 15px;
-
       color: #eee;
 
     }
@@ -69,9 +81,7 @@
     @keyframes fade {
 
       from {
-
         opacity: 0;
-
         transform: translateX(30px);
 
       }
@@ -79,7 +89,6 @@
       to {
 
         opacity: 1;
-
         transform: translateX(0);
 
       }
@@ -89,22 +98,16 @@
     #lineCanvas {
 
       position: absolute;
-
       left: 0;
-
       top: 0;
-
       width: 100%;
-
       height: 100%;
-
       pointer-events: none;
-
       z-index: 500;
 
     }
 
-    /* DEBUG LISTA */
+
     #debugBox {
       position: absolute;
       bottom: 20px;
@@ -126,11 +129,9 @@
       position: absolute;
       bottom: 40px;
       right: 30px;
-
       display: flex;
       flex-direction: column;
       gap: 15px;
-
       z-index: 1000;
 
     }
@@ -139,19 +140,13 @@
 
       width: 65px;
       height: 65px;
-
       border: none;
       border-radius: 50%;
-
       background: rgba(30, 30, 30, .65);
-
       color: white;
-
       font-size: 30px;
       font-weight: bold;
-
       backdrop-filter: blur(8px);
-
       touch-action: none;
 
     }
@@ -194,10 +189,10 @@
 
   <canvas id="lineCanvas"></canvas>
 
-<!--<div id="debugBox">
+  <div id="debugBox">
     <b>Objetos interactivos</b>
     <ul id="listaObjetos"></ul>
-  </div>-->
+  </div>
 
   <a-scene shadow="type:pcfsoft; enabled:true" renderer="colorManagement:true; physicallyCorrectLights:true">
 
@@ -278,6 +273,10 @@
     });
 
     [
+      ["btnW", "w"],
+      ["btnA", "a"],
+      ["btnS", "s"],
+      ["btnD", "d"],
       ["btnUp", "up"],
       ["btnDown", "down"]
 
@@ -285,12 +284,12 @@
 
       const b = document.getElementById(id);
 
-      b.addEventListener("touchstart", (e) => {
+      b.addEventListener("touchstart", e => {
         e.preventDefault();
         mover[key] = true;
       });
 
-      b.addEventListener("touchend", (e) => {
+      b.addEventListener("touchend", e => {
         e.preventDefault();
         mover[key] = false;
       });
@@ -478,8 +477,10 @@
     }
 
 
-
+    const cam = document.querySelector("[camera]");
     function animate() {
+
+      requestAnimationFrame(animate);
 
       const velocidad = 0.05;
       const velocidadY = 0.03;
@@ -494,9 +495,26 @@
 
       if (mover.down)
         cam.object3D.position.y -= velocidadY;
-    }
 
+    }
     animate();
+
+
+    b.addEventListener("pointerdown", () => {
+      mover[key] = true;
+    });
+
+    b.addEventListener("pointerup", () => {
+      mover[key] = false;
+    });
+
+    b.addEventListener("pointerleave", () => {
+      mover[key] = false;
+    });
+
+    b.addEventListener("pointercancel", () => {
+      mover[key] = false;
+    });
 
   </script>
 
