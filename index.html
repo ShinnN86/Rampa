@@ -197,7 +197,7 @@
   <a-scene shadow="type:pcfsoft; enabled:true" renderer="colorManagement:true; physicallyCorrectLights:true">
 
     <a-assets>
-      <a-asset-item id="modeloGLB" src="Rampav2.glb"></a-asset-item>
+      <a-asset-item id="modeloGLB" src="Rampav8.glb"></a-asset-item>
     </a-assets>
 
     <a-sky color="#87CEEB"></a-sky>
@@ -241,11 +241,6 @@
       up: false,
       down: false
     };
-
-
-    /* ----------------------------
-       CONTROLES DE ALTURA (TECLADO)
-    -----------------------------*/
 
     const camara = document.querySelector("[camera]");
 
@@ -328,9 +323,6 @@
     let lastHit = null;
     let meshList = [];
 
-    /* ----------------------------
-       MODELO CARGADO
-    -----------------------------*/
     templo.addEventListener("model-loaded", () => {
 
       const mesh = templo.getObject3D("mesh");
@@ -353,13 +345,10 @@
 
       });
 
-      console.log("Objetos interactivos:", meshList);
+      //console.log("Objetos interactivos:", meshList);
 
     });
 
-    /* ----------------------------
-       HOVER (mouse move)
-    -----------------------------*/
     window.addEventListener("mousemove", (event) => {
 
       if (meshList.length === 0) return;
@@ -433,9 +422,7 @@
 
     }
 
-    /* ----------------------------
-      PC móvil
-    -----------------------------*/
+
     window.addEventListener("click", () => {
 
       if (!lastHit) return;
